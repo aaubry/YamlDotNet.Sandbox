@@ -1,4 +1,4 @@
-//  This file is part of YamlDotNet - A .NET library for YAML.
+﻿//  This file is part of YamlDotNet - A .NET library for YAML.
 //  Copyright (c) Antoine Aubry and contributors
 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,39 +23,50 @@ using System;
 
 namespace YamlDotNet.Core
 {
-    internal sealed class StringLookAheadBuffer : ILookAheadBuffer
+    public struct Tag : IEquatable<Tag>
     {
-        private readonly string value;
+        public static readonly Tag NonSpecific = default;
 
-        public int Position { get; private set; }
+        private readonly string? value;
 
-        public StringLookAheadBuffer(string value)
+        public string Value => value ?? throw new InvalidOperationException("Cannot read the Value of a non-specific tag");
+
+        public bool IsNonSpecific => value is null;
+
+        public Tag(string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("A tag cannot be null or empty. To indicate a non-specific tag, please use Tag.NonSpecific", nameof(value));
+            }
+
             this.value = value;
         }
 
-        public int Length => value.Length;
+        public override string ToString() => Value ?? "?";
 
-        public bool EndOfInput => IsOutside(Position);
+        public bool Equals(Tag other) => Equals(value, other.value);
 
-        public char Peek(int offset)
+        public override bool Equals(object? obj)
         {
-            var index = Position + offset;
-            return IsOutside(index) ? '\0' : value[index];
+            return obj is Tag other && Equals(other);
         }
 
-        private bool IsOutside(int index)
+        public override int GetHashCode()
         {
-            return index >= value.Length;
+            return value?.GetHashCode() ?? 0;
         }
 
-        public void Skip(int length)
+        public static bool operator ==(Tag left, Tag right)
         {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length), "The length must be positive.");
-            }
-            Position += length;
+            return left.Equals(right);
         }
+
+        public static bool operator !=(Tag left, Tag right)
+        {
+            return !(left == right);
+        }
+
+        public static implicit operator Tag(string value) => new Tag(value);
     }
 }

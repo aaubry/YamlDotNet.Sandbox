@@ -19,8 +19,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-using System.Globalization;
-
 namespace YamlDotNet.Core.Events
 {
     /// <summary>
@@ -36,7 +34,7 @@ namespace YamlDotNet.Core.Events
         /// <summary>
         /// Gets the value of the alias.
         /// </summary>
-        public string Value { get; }
+        public Anchor Value { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnchorAlias"/> class.
@@ -44,17 +42,12 @@ namespace YamlDotNet.Core.Events
         /// <param name="value">The value of the alias.</param>
         /// <param name="start">The start position of the event.</param>
         /// <param name="end">The end position of the event.</param>
-        public AnchorAlias(string value, Mark start, Mark end)
+        public AnchorAlias(Anchor value, Mark start, Mark end)
             : base(start, end)
         {
-            if (string.IsNullOrEmpty(value))
+            if (value.IsEmpty)
             {
                 throw new YamlException(start, end, "Anchor value must not be empty.");
-            }
-
-            if (!NodeEvent.AnchorPattern.IsMatch(value))
-            {
-                throw new YamlException(start, end, "Anchor value must not contain disallowed characters: []{},");
             }
 
             this.Value = value;
@@ -64,7 +57,7 @@ namespace YamlDotNet.Core.Events
         /// Initializes a new instance of the <see cref="AnchorAlias"/> class.
         /// </summary>
         /// <param name="value">The value of the alias.</param>
-        public AnchorAlias(string value)
+        public AnchorAlias(Anchor value)
             : this(value, Mark.Empty, Mark.Empty)
         {
         }

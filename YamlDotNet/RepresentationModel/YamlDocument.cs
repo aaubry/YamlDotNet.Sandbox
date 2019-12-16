@@ -31,7 +31,6 @@ namespace YamlDotNet.RepresentationModel
     /// <summary>
     /// Represents an YAML document.
     /// </summary>
-    [Serializable]
     public class YamlDocument
     {
         /// <summary>
@@ -93,7 +92,7 @@ namespace YamlDotNet.RepresentationModel
         /// </summary>
         private class AnchorAssigningVisitor : YamlVisitorBase
         {
-            private readonly HashSet<string> existingAnchors = new HashSet<string>();
+            private readonly HashSet<Anchor> existingAnchors = new HashSet<Anchor>();
             /// <summary>
             /// Key: Node, Value: IsDuplicate
             /// </summary>
@@ -111,9 +110,9 @@ namespace YamlDotNet.RepresentationModel
                 {
                     if (visitedNode.Value)
                     {
-                        string anchor;
+                        Anchor anchor;
                         // If the existing anchor is not already used, we can have it
-                        if (!string.IsNullOrEmpty(visitedNode.Key.Anchor) && !existingAnchors.Contains(visitedNode.Key.Anchor))
+                        if (!visitedNode.Key.Anchor.IsEmpty && !existingAnchors.Contains(visitedNode.Key.Anchor))
                         {
                             anchor = visitedNode.Key.Anchor;
                         }

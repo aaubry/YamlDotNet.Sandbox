@@ -70,13 +70,13 @@ namespace YamlDotNet.Core
 
         private class AnchorData
         {
-            public string? anchor;
+            public Anchor anchor;
             public bool isAlias;
         }
 
         private class TagData
         {
-            public string? handle;
+            public Tag handle;
             public string? suffix;
         }
 
@@ -237,8 +237,8 @@ namespace YamlDotNet.Core
 
         private void AnalyzeEvent(ParsingEvent evt)
         {
-            anchorData.anchor = null;
-            tagData.handle = null;
+            anchorData.anchor = default;
+            tagData.handle = default;
             tagData.suffix = null;
 
             if (evt is AnchorAlias alias)
@@ -256,14 +256,14 @@ namespace YamlDotNet.Core
 
                 AnalyzeAnchor(nodeEvent.Anchor, false);
 
-                if (!string.IsNullOrEmpty(nodeEvent.Tag) && (isCanonical || nodeEvent.IsCanonical))
+                if (!nodeEvent.Tag.IsNonSpecific && (isCanonical || nodeEvent.IsCanonical))
                 {
                     AnalyzeTag(nodeEvent.Tag);
                 }
             }
         }
 
-        private void AnalyzeAnchor(string? anchor, bool isAlias)
+        private void AnalyzeAnchor(Anchor anchor, bool isAlias)
         {
             anchorData.anchor = anchor;
             anchorData.isAlias = isAlias;
@@ -523,12 +523,12 @@ namespace YamlDotNet.Core
                    encoding is UTF7Encoding;
         }
 
-        private void AnalyzeTag(string tag)
+        private void AnalyzeTag(Tag tag)
         {
             tagData.handle = tag;
             foreach (var tagDirective in tagDirectives)
             {
-                if (tag.StartsWith(tagDirective.Prefix, StringComparison.Ordinal))
+                if (tag.Value.StartsWith(tagDirective.Prefix, StringComparison.Ordinal))
                 {
                     tagData.handle = tagDirective.Handle;
                     tagData.suffix = tag.Substring(tagDirective.Prefix.Length);
@@ -1375,7 +1375,7 @@ namespace YamlDotNet.Core
 
         private void ProcessAnchor()
         {
-            if (anchorData.anchor != null)
+            if (!anchorData.anchor.IsEmpty)
             {
                 WriteIndicator(anchorData.isAlias ? "*" : "&", true, false, false);
                 WriteAnchor(anchorData.anchor);
@@ -1666,7 +1666,7 @@ namespace YamlDotNet.Core
             switch (events.Peek().Type)
             {
                 case EventType.Alias:
-                    length = SafeStringLength(anchorData.anchor);
+                    length = AnchorLength(anchorData.anchor);
                     break;
 
                 case EventType.Scalar:
@@ -1676,10 +1676,10 @@ namespace YamlDotNet.Core
                     }
 
                     length =
-                        SafeStringLength(anchorData.anchor) +
-                            SafeStringLength(tagData.handle) +
-                            SafeStringLength(tagData.suffix) +
-                            SafeStringLength(scalarData.value);
+                        AnchorLength(anchorData.anchor) +
+                        SafeStringLength(tagData.handle) +
+                        SafeStringLength(tagData.suffix) +
+                        SafeStringLength(scalarData.value);
                     break;
 
                 case EventType.SequenceStart:
@@ -1688,9 +1688,9 @@ namespace YamlDotNet.Core
                         return false;
                     }
                     length =
-                        SafeStringLength(anchorData.anchor) +
-                            SafeStringLength(tagData.handle) +
-                            SafeStringLength(tagData.suffix);
+                        AnchorLength(anchorData.anchor) +
+                        SafeStringLength(tagData.handle) +
+                        SafeStringLength(tagData.suffix);
                     break;
 
                 case EventType.MappingStart:
@@ -1699,9 +1699,9 @@ namespace YamlDotNet.Core
                         return false;
                     }
                     length =
-                        SafeStringLength(anchorData.anchor) +
-                            SafeStringLength(tagData.handle) +
-                            SafeStringLength(tagData.suffix);
+                        AnchorLength(anchorData.anchor) +
+                        SafeStringLength(tagData.handle) +
+                        SafeStringLength(tagData.suffix);
                     break;
 
                 default:
@@ -1714,6 +1714,11 @@ namespace YamlDotNet.Core
         private int SafeStringLength(string? value)
         {
             return value == null ? 0 : value.Length;
+        }
+
+        private int AnchorLength(Anchor anchor)
+        {
+            return anchor.IsEmpty ? 0 : anchor.Value.Length;
         }
 
         private bool CheckEmptySequence() => CheckEmptyStructure<SequenceStart, SequenceEnd>();
@@ -1801,9 +1806,9 @@ namespace YamlDotNet.Core
             isIndentation = true;
         }
 
-        private void WriteAnchor(string value)
+        private void WriteAnchor(Anchor value)
         {
-            Write(value);
+            Write(value.Value);
 
             isWhitespace = false;
             isIndentation = false;

@@ -30,7 +30,6 @@ namespace YamlDotNet.RepresentationModel
     /// <summary>
     /// Represents a single node in the YAML document.
     /// </summary>
-    [Serializable]
     public abstract class YamlNode
     {
         private const int MaximumRecursionLevel = 1000;
@@ -40,13 +39,13 @@ namespace YamlDotNet.RepresentationModel
         /// Gets or sets the anchor of the node.
         /// </summary>
         /// <value>The anchor.</value>
-        public string? Anchor { get; set; }
+        public Anchor Anchor { get; set; }
 
         /// <summary>
         /// Gets or sets the tag of the node.
         /// </summary>
         /// <value>The tag.</value>
-        public string? Tag { get; set; }
+        public Tag Tag { get; set; }
 
         /// <summary>
         /// Gets the position in the input stream where the event that originated the node starts.
@@ -117,7 +116,7 @@ namespace YamlDotNet.RepresentationModel
         /// <param name="state">The state.</param>
         internal void Save(IEmitter emitter, EmitterState state)
         {
-            if (!string.IsNullOrEmpty(Anchor) && !state.EmittedAnchors.Add(Anchor))
+            if (!Anchor.IsEmpty && !state.EmittedAnchors.Add(Anchor))
             {
                 emitter.Emit(new AnchorAlias(Anchor));
             }
