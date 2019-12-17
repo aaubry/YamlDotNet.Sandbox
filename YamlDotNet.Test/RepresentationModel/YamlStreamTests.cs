@@ -282,11 +282,11 @@ namespace YamlDotNet.Test.RepresentationModel
         private class YamlNodeEvent
         {
             public YamlNodeEventType Type { get; private set; }
-            public string Anchor { get; private set; }
-            public string Tag { get; private set; }
+            public Anchor Anchor { get; private set; }
+            public Tag Tag { get; private set; }
             public string Value { get; private set; }
 
-            public YamlNodeEvent(YamlNodeEventType type, string anchor, string tag, string value)
+            public YamlNodeEvent(YamlNodeEventType type, Anchor anchor, Tag tag, string value)
             {
                 Type = type;
                 Anchor = anchor;

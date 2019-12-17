@@ -40,7 +40,7 @@ namespace YamlDotNet.Serialization.ValueDeserializers
 
         public object? DeserializeValue (IParser parser, Type expectedType, SerializerState state, IValueDeserializer nestedObjectDeserializer)
         {
-            parser.Accept<NodeEvent>(out var nodeEvent);
+            var nodeEvent = parser.Require<NodeEvent>();
             var nodeType = GetTypeFromEvent(nodeEvent, expectedType);
 
             try
@@ -74,7 +74,7 @@ namespace YamlDotNet.Serialization.ValueDeserializers
             );
         }
 
-        private Type GetTypeFromEvent(NodeEvent? nodeEvent, Type currentType)
+        private Type GetTypeFromEvent(NodeEvent nodeEvent, Type currentType)
         {
             foreach (var typeResolver in typeResolvers)
             {

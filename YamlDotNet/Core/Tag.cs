@@ -33,6 +33,8 @@ namespace YamlDotNet.Core
 
         public bool IsNonSpecific => value is null;
 
+        private const string NonSpecificTagValue = "!";
+
         public Tag(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -40,7 +42,14 @@ namespace YamlDotNet.Core
                 throw new ArgumentException("A tag cannot be null or empty. To indicate a non-specific tag, please use Tag.NonSpecific", nameof(value));
             }
 
-            this.value = value;
+            if (value != NonSpecificTagValue) // When the non-specific tag is explicitly specified
+            {
+                this.value = value;
+            }
+            else
+            {
+                this.value = null;
+            }
         }
 
         public override string ToString() => Value ?? "?";
@@ -67,6 +76,6 @@ namespace YamlDotNet.Core
             return !(left == right);
         }
 
-        public static implicit operator Tag(string value) => new Tag(value);
+        public static implicit operator Tag(string? value) => value != null ? new Tag(value) : default;
     }
 }

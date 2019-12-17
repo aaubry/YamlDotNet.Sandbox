@@ -27,9 +27,11 @@ namespace YamlDotNet.Serialization.NodeTypeResolvers
 {
     public class PreventUnknownTagsNodeTypeResolver : INodeTypeResolver
     {
-        bool INodeTypeResolver.Resolve(NodeEvent? nodeEvent, ref Type currentType)
+        bool INodeTypeResolver.Resolve(NodeEvent nodeEvent, ref Type currentType)
         {
-            if (nodeEvent != null && !string.IsNullOrEmpty(nodeEvent.Tag))
+            // If we reach this point with a non-specific tag, it means that none of the previous resolvers
+            // was able to resolve the tag, therefore we consider it unresolved.
+            if (!nodeEvent.Tag.IsNonSpecific)
             {
                 throw new YamlException(nodeEvent.Start, nodeEvent.End, $"Encountered an unresolved tag '{nodeEvent.Tag}'");
             }

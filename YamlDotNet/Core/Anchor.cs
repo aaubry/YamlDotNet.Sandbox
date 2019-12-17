@@ -29,7 +29,7 @@ namespace YamlDotNet.Core
         public static readonly Anchor Empty = default;
 
         // https://yaml.org/spec/1.2/spec.html#id2785586
-        private static readonly Regex AnchorPattern = new Regex(@"^(?![\[\]\{\},]+)$", StandardRegexOptions.Compiled);
+        private static readonly Regex AnchorPattern = new Regex(@"^[^\[\]\{\},]+$", StandardRegexOptions.Compiled);
 
         private readonly string? value;
 
@@ -71,6 +71,6 @@ namespace YamlDotNet.Core
             return !(left == right);
         }
 
-        public static implicit operator Anchor(string value) => new Anchor(value);
+        public static implicit operator Anchor(string? value) => value != null ? new Anchor(value) : default;
     }
 }

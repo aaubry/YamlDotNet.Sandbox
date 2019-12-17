@@ -268,7 +268,7 @@ namespace YamlDotNet.Core
 
             void IParsingEventVisitor.Visit(SequenceStart e)
             {
-                clonedEvent = new SequenceStart(null, e.Tag, e.IsImplicit, e.Style, e.Start, e.End);
+                clonedEvent = new SequenceStart(default, e.Tag, e.IsImplicit, e.Style, e.Start, e.End);
             }
 
             void IParsingEventVisitor.Visit(SequenceEnd e)
@@ -278,7 +278,7 @@ namespace YamlDotNet.Core
 
             void IParsingEventVisitor.Visit(MappingStart e)
             {
-                clonedEvent = new MappingStart(null, e.Tag, e.IsImplicit, e.Style, e.Start, e.End);
+                clonedEvent = new MappingStart(default, e.Tag, e.IsImplicit, e.Style, e.Start, e.End);
             }
 
             void IParsingEventVisitor.Visit(MappingEnd e)

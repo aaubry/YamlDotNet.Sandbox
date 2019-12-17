@@ -421,7 +421,7 @@ namespace YamlDotNet.Core
         /// </summary>
         private static ParsingEvent ProcessEmptyScalar(Mark position)
         {
-            return new Events.Scalar(null, null, string.Empty, ScalarStyle.Plain, true, false, position, position);
+            return new Events.Scalar(default, default, string.Empty, ScalarStyle.Plain, true, false, position, position);
         }
 
         /// <summary>
@@ -470,21 +470,21 @@ namespace YamlDotNet.Core
 
             var start = current.Start;
 
-            string? anchorName = null;
-            string? tagName = null;
+            var anchorName = Anchor.Empty;
+            var tagName = Tag.NonSpecific;
             Anchor? lastAnchor = null;
             Tag? lastTag = null;
 
             // The anchor and the tag can be in any order. This loop repeats at most twice.
             while (true)
             {
-                if (anchorName == null && current is Tokens.Anchor anchor)
+                if (anchorName.IsEmpty && current is Tokens.Anchor anchor)
                 {
                     lastAnchor = anchor;
-                    anchorName = string.IsNullOrEmpty(anchor.Value) ? null : anchor.Value;
+                    anchorName = string.IsNullOrEmpty(anchor.Value) ? Anchor.Empty : anchor.Value;
                     Skip();
                 }
-                else if (tagName == null && current is Tokens.Tag tag)
+                else if (tagName.IsNonSpecific && current is Tokens.Tag tag)
                 {
                     lastTag = tag;
                     if (string.IsNullOrEmpty(tag.Handle))
@@ -498,10 +498,6 @@ namespace YamlDotNet.Core
                     else
                     {
                         throw new SemanticErrorException(tag.Start, tag.End, "While parsing a node, found undefined tag handle.");
-                    }
-                    if (string.IsNullOrEmpty(tagName))
-                    {
-                        tagName = null;
                     }
 
                     Skip();
@@ -530,7 +526,7 @@ namespace YamlDotNet.Core
                 current = GetCurrentToken() ?? throw new SemanticErrorException("Reached the end of the stream while parsing a node");
             }
 
-            var isImplicit = string.IsNullOrEmpty(tagName);
+            var isImplicit = tagName.IsNonSpecific;
 
             if (isIndentlessSequence && GetCurrentToken() is BlockEntry)
             {
@@ -551,11 +547,11 @@ namespace YamlDotNet.Core
                 {
                     var isPlainImplicit = false;
                     var isQuotedImplicit = false;
-                    if ((scalar.Style == ScalarStyle.Plain && tagName == null) || tagName == Constants.DefaultHandle)
+                    if (scalar.Style == ScalarStyle.Plain && tagName.IsNonSpecific)
                     {
                         isPlainImplicit = true;
                     }
-                    else if (tagName == null)
+                    else if (tagName.IsNonSpecific)
                     {
                         isQuotedImplicit = true;
                     }
@@ -620,7 +616,7 @@ namespace YamlDotNet.Core
                     }
                 }
 
-                if (anchorName != null || tagName != null)
+                if (!anchorName.IsEmpty || !tagName.IsNonSpecific)
                 {
                     state = states.Pop();
                     return new Events.Scalar(anchorName, tagName, string.Empty, ScalarStyle.Plain, isImplicit, false, start, current.End);
@@ -896,7 +892,7 @@ namespace YamlDotNet.Core
                 if (current is Key)
                 {
                     state = ParserState.FlowSequenceEntryMappingKey;
-                    evt = new Events.MappingStart(null, null, true, MappingStyle.Flow);
+                    evt = new Events.MappingStart(default, default, true, MappingStyle.Flow);
                     Skip();
                     return evt;
                 }

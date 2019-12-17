@@ -65,7 +65,7 @@ namespace YamlDotNet.RepresentationModel
         internal void Load(NodeEvent yamlEvent, DocumentLoadingState state)
         {
             Tag = yamlEvent.Tag;
-            if (yamlEvent.Anchor != null)
+            if (!yamlEvent.Anchor.IsEmpty)
             {
                 Anchor = yamlEvent.Anchor;
                 state.AddAnchor(this);

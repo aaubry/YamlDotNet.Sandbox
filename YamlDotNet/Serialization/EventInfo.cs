@@ -37,13 +37,13 @@ namespace YamlDotNet.Serialization
 
     public class AliasEventInfo : EventInfo
     {
-        public AliasEventInfo(IObjectDescriptor source, string alias)
+        public AliasEventInfo(IObjectDescriptor source, Anchor alias)
             : base(source)
         {
-            Alias = alias ?? throw new ArgumentNullException(nameof(alias));
+            Alias = alias;
         }
 
-        public string Alias { get; }
+        public Anchor Alias { get; }
     }
 
     public class ObjectEventInfo : EventInfo
@@ -53,8 +53,8 @@ namespace YamlDotNet.Serialization
         {
         }
 
-        public string? Anchor { get; set; }
-        public string? Tag { get; set; }
+        public Anchor Anchor { get; set; }
+        public Tag Tag { get; set; }
     }
 
     public sealed class ScalarEventInfo : ObjectEventInfo

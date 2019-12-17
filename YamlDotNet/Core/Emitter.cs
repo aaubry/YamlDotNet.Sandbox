@@ -531,7 +531,7 @@ namespace YamlDotNet.Core
                 if (tag.Value.StartsWith(tagDirective.Prefix, StringComparison.Ordinal))
                 {
                     tagData.handle = tagDirective.Handle;
-                    tagData.suffix = tag.Substring(tagDirective.Prefix.Length);
+                    tagData.suffix = tag.Value.Substring(tagDirective.Prefix.Length);
                     break;
                 }
             }
@@ -858,7 +858,7 @@ namespace YamlDotNet.Core
             var scalar = (Scalar)evt;
 
             var style = scalar.Style;
-            var noTag = tagData.handle == null && tagData.suffix == null;
+            var noTag = tagData.handle.IsNonSpecific && tagData.suffix == null;
 
             if (noTag && !scalar.IsPlainImplicit && !scalar.IsQuotedImplicit)
             {
@@ -1384,12 +1384,12 @@ namespace YamlDotNet.Core
 
         private void ProcessTag()
         {
-            if (tagData.handle == null && tagData.suffix == null)
+            if (tagData.handle.IsNonSpecific && tagData.suffix == null)
             {
                 return;
             }
 
-            if (tagData.handle != null)
+            if (tagData.handle.IsNonSpecific)
             {
                 WriteTagHandle(tagData.handle);
                 if (tagData.suffix != null)
@@ -1677,7 +1677,7 @@ namespace YamlDotNet.Core
 
                     length =
                         AnchorLength(anchorData.anchor) +
-                        SafeStringLength(tagData.handle) +
+                        TagLength(tagData.handle) +
                         SafeStringLength(tagData.suffix) +
                         SafeStringLength(scalarData.value);
                     break;
@@ -1689,7 +1689,7 @@ namespace YamlDotNet.Core
                     }
                     length =
                         AnchorLength(anchorData.anchor) +
-                        SafeStringLength(tagData.handle) +
+                        TagLength(tagData.handle) +
                         SafeStringLength(tagData.suffix);
                     break;
 
@@ -1700,7 +1700,7 @@ namespace YamlDotNet.Core
                     }
                     length =
                         AnchorLength(anchorData.anchor) +
-                        SafeStringLength(tagData.handle) +
+                        TagLength(tagData.handle) +
                         SafeStringLength(tagData.suffix);
                     break;
 
@@ -1719,6 +1719,11 @@ namespace YamlDotNet.Core
         private int AnchorLength(Anchor anchor)
         {
             return anchor.IsEmpty ? 0 : anchor.Value.Length;
+        }
+
+        private int TagLength(Tag tag)
+        {
+            return tag.IsNonSpecific ? 0 : tag.Value.Length;
         }
 
         private bool CheckEmptySequence() => CheckEmptyStructure<SequenceStart, SequenceEnd>();
@@ -1814,14 +1819,14 @@ namespace YamlDotNet.Core
             isIndentation = false;
         }
 
-        private void WriteTagHandle(string value)
+        private void WriteTagHandle(Tag value)
         {
             if (!isWhitespace)
             {
                 Write(' ');
             }
 
-            Write(value);
+            Write(value.Value);
 
             isWhitespace = false;
             isIndentation = false;

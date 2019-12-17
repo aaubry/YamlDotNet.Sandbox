@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization.NodeDeserializers;
 using YamlDotNet.Serialization.NodeTypeResolvers;
@@ -42,7 +43,7 @@ namespace YamlDotNet.Serialization
         private IObjectFactory objectFactory = new DefaultObjectFactory();
         private readonly LazyComponentRegistrationList<Nothing, INodeDeserializer> nodeDeserializerFactories;
         private readonly LazyComponentRegistrationList<Nothing, INodeTypeResolver> nodeTypeResolverFactories;
-        private readonly Dictionary<string, Type> tagMappings;
+        private readonly Dictionary<Tag, Type> tagMappings;
         private bool ignoreUnmatched;
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace YamlDotNet.Serialization
         public DeserializerBuilder()
             : base(new StaticTypeResolver())
         {
-            tagMappings = new Dictionary<string, Type>
+            tagMappings = new Dictionary<Tag, Type>
             {
                 { "tag:yaml.org,2002:map", typeof(Dictionary<object, object>) },
                 { "tag:yaml.org,2002:bool", typeof(bool) },

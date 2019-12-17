@@ -38,6 +38,5 @@ namespace YamlDotNet.Core
         public const int MinorVersion = 3;
 
         public const char HandleCharacter = '!';
-        public const string DefaultHandle = "!";
     }
 }

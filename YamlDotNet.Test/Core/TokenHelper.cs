@@ -56,9 +56,9 @@ namespace YamlDotNet.Test.Core
             return new TagDirective(handle, prefix);
         }
 
-        protected static Tag Tag(string handle, string suffix)
+        protected static YamlDotNet.Core.Tokens.Tag Tag(string handle, string suffix)
         {
-            return new Tag(handle, suffix);
+            return new YamlDotNet.Core.Tokens.Tag(handle, suffix);
         }
 
         protected static Scalar PlainScalar(string text)
@@ -141,9 +141,9 @@ namespace YamlDotNet.Test.Core
             get { return new BlockEnd(); }
         }
 
-        protected static Anchor Anchor(string anchor)
+        protected static YamlDotNet.Core.Tokens.Anchor Anchor(string anchor)
         {
-            return new Anchor(anchor);
+            return new YamlDotNet.Core.Tokens.Anchor(anchor);
         }
 
         protected static AnchorAlias AnchorAlias(string alias)

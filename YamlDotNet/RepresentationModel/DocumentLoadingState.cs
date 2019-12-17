@@ -40,7 +40,7 @@ namespace YamlDotNet.RepresentationModel
         /// <param name="node">The node.</param>
         public void AddAnchor(YamlNode node)
         {
-            if (node.Anchor == null)
+            if (node.Anchor.IsEmpty)
             {
                 throw new ArgumentException("The specified node does not have an anchor");
             }
