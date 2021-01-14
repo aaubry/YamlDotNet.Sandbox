@@ -18,7 +18,7 @@ install:
 # install:
 #   - cmd: git submodule update --init
 #   - cmd: dotnet tool install --global GitVersion.Tool
-#   - cmd: set # temp!
+#   - cmd: set # temp
 
 # build_script:
 #   - cmd: .\build.cmd Publish --appveyor
