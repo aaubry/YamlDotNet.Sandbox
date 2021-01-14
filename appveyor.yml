@@ -13,7 +13,7 @@ build:
 
 install:
   - cmd: git tag --list
-  - cmd: git branch
+  - cmd: git branch -a
 
 # install:
 #   - cmd: git submodule update --init
