@@ -202,7 +202,7 @@ namespace build
         public static PreviousReleases DiscoverPreviousReleases()
         {
             // Find previous release
-            var releases = ReadLines("git", "tag --list --merged master --format=\"%(refname:short)\" v*")
+            var releases = ReadLines("git", "tag --list --merged origin/master --format=\"%(refname:short)\" v*")
                 .Select(tag => Regex.Match(tag.TrimEnd('\r'), @"^v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$"))
                 .Where(m => m.Success)
                 .Select(match => new Version(
